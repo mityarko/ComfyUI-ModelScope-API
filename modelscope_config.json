@@ -11,7 +11,7 @@
   "default_guidance": 7.5,
   "default_text_model": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
   "default_system_prompt": "You are a helpful assistant.",
-  "default_user_prompt": "你好",
+  "default_user_prompt": "Hello",
   "api_token": "",
   "image_models": [
     "Qwen/Qwen-Image",
@@ -56,32 +56,32 @@
   "default_lora_weight": 0.8,
   "lora_presets": [
     {
-      "name": "无LoRA",
+      "name": "No LoRA",
       "model_id": "",
       "weight": 0.8
     },
     {
-      "name": "Qwen-小红书风格美人",
+      "name": "Qwen-Rednote Style Beauty",
       "model_id": "qiyuanai/TikTok_Xiaohongshu_career_line_beauty_v1",
       "weight": 0.8
     },
     {
-      "name": "Qwen-小红书甜妹",
+      "name": "Qwen-Rednote Sweet Girl",
       "model_id": "wilderkid/Rednote_SweetGirl",
       "weight": 0.8
     },
     {
-      "name": "Qwen-小红薯-风格插画-排版",
+      "name": "Qwen-Rednote Style Illustration Layout",
       "model_id": "YJ777YJ/xiaohshu",
       "weight": 0.8
     },
     {
-      "name": "Qwen-真实人像小红书风格",
+      "name": "Qwen-Real Portrait Rednote Style",
       "model_id": "chy1125677992/qwxhs",
       "weight": 0.8
     },
     {
-      "name": "Qwen-抖音小红书手持手机自拍美女",
+      "name": "Qwen-Douyin Rednote Handheld Selfie Beauty",
       "model_id": "qiyuanai/shouchizipai_v1",
       "weight": 0.8
     }

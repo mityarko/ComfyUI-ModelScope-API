@@ -13,8 +13,8 @@ try:
     from openai import OpenAI
     OPENAI_AVAILABLE = True
 except ImportError:
-    print("⚠️ 警告: 未安装openai库，图生文功能将不可用")
-    print("请运行: pip install openai")
+    print("⚠️ Warning: openai library not installed, Image-to-Text functionality will be unavailable")
+    print("Please run: pip install openai")
     OPENAI_AVAILABLE = False
     OpenAI = None
  
@@ -29,37 +29,37 @@ def load_config():
             "timeout": 720,
             "image_download_timeout": 30,
             "default_prompt": "A beautiful landscape",
-            "api_token": ""  # 确保默认默认配置中添加api_token字段
+            "api_token": ""
         }
  
 def save_config(config):
-    """保存配置到modelscope_config.json"""
+    """Save configuration to modelscope_config.json"""
     config_path = os.path.join(os.path.dirname(__file__), 'modelscope_config.json')
     try:
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(config, f, ensure_ascii=False, indent=2)
         return True
     except Exception as e:
-        print(f"保存配置失败: {e}")
+        print(f"Failed to save configuration: {e}")
         return False
  
 def load_api_token():
-    """仅从modelscope_config.json读取API Token"""
+    """Read API Token only from modelscope_config.json"""
     try:
         cfg = load_config()
         return cfg.get("api_token", "").strip()
     except Exception as e:
-        print(f"读取config.json中的token失败: {e}")
+        print(f"Failed to read token from config.json: {e}")
         return ""
  
 def save_api_token(token):
-    """仅将API Token保存到modelscope_config.json"""
+    """Save API Token only to modelscope_config.json"""
     try:
         cfg = load_config()
         cfg["api_token"] = token.strip()
         return save_config(cfg)
     except Exception as e:
-        print(f"保存token失败: {e}")
+        print(f"Failed to save token: {e}")
         return False
  
 def tensor_to_base64_url(image_tensor):
@@ -81,8 +81,8 @@ def tensor_to_base64_url(image_tensor):
         return f"data:image/jpeg;base64,{img_base64}"
         
     except Exception as e:
-        print(f"图像转换失败: {e}")
-        raise Exception(f"图像格式转换失败: {str(e)}")
+        print(f"Image conversion failed: {e}")
+        raise Exception(f"Image format conversion failed: {str(e)}")
  
 class ModelScopeVisionNode:
     def __init__(self):
@@ -94,7 +94,7 @@ class ModelScopeVisionNode:
             return {
                 "required": {
                     "error_message": ("STRING", {
-                        "default": "请先安装openai库: pip install openai",
+                        "default": "Please install openai library first: pip install openai",
                         "multiline": True
                     }),
                 }
@@ -106,11 +106,11 @@ class ModelScopeVisionNode:
                 "image": ("IMAGE",),
                 "prompt": ("STRING", {
                     "multiline": True,
-                    "default": config.get("default_prompt", "描述这幅图")
+                    "default": config.get("default_prompt", "Describe this image")
                 }),
                 "api_token": ("STRING", {
                     "default": "",
-                    "placeholder": "请输入您的魔搭API Token",
+                    "placeholder": "Please enter your ModelScope API Token",
                     "multiline": False
                 }),
             },
@@ -139,29 +139,29 @@ class ModelScopeVisionNode:
  
     def analyze_image(self, image=None, prompt="", api_token="", model="stepfun-ai/step3", max_tokens=1000, temperature=0.7, error_message=""):
         if not OPENAI_AVAILABLE:
-            return ("请先安装openai库: pip install openai",)
+            return ("Please install openai library first: pip install openai",)
         
         config = load_config()
         
         if not api_token or api_token.strip() == "":
             api_token = load_api_token()
             if not api_token or api_token.strip() == "":
-                raise Exception("请输入有效的API Token或确保已保存token")
+                raise Exception("Please enter a valid API Token or ensure token is saved")
         
         saved_token = load_api_token()
         if api_token != saved_token:
             if save_api_token(api_token):
-                print("✅ API Token已自动保存到modelscope_config.json")
+                print("✅ API Token has been automatically saved to modelscope_config.json")
             else:
-                print("⚠️ API Token保存失败，但不影响当前使用")
+                print("⚠️ API Token saving failed, but it doesn't affect current usage")
         
         try:
-            print(f"🔍 开始分析图像...")
-            print(f"📝 提示词: {prompt}")
-            print(f"🤖 模型: {model}")
+            print(f"🔍 Starting image analysis...")
+            print(f"📝 Prompt: {prompt}")
+            print(f"🤖 Model: {model}")
             
             image_url = tensor_to_base64_url(image)
-            print(f"🖼️ 图像已转换为base64格式")
+            print(f"🖼️ Image converted to base64 format")
             
             client = OpenAI(
                 base_url='https://api-inference.modelscope.cn/v1',
@@ -181,7 +181,7 @@ class ModelScopeVisionNode:
                 }],
             }]
             
-            print(f"🚀 发送API请求...")
+            print(f"🚀 Sending API request...")
             
             response = client.chat.completions.create(
                 model=model,
@@ -192,13 +192,13 @@ class ModelScopeVisionNode:
             )
             
             description = response.choices[0].message.content
-            print(f"✅ 分析完成!")
-            print(f"📄 结果: {description[:100]}...")
+            print(f"✅ Analysis complete!")
+            print(f"📄 Result: {description[:100]}...")
             
             return (description,)
             
         except Exception as e:
-            error_msg = f"图像分析失败: {str(e)}"
+            error_msg = f"Image analysis failed: {str(e)}"
             print(f"❌ {error_msg}")
             return (error_msg,)
  
@@ -208,7 +208,7 @@ if OPENAI_AVAILABLE:
     }
      
     NODE_DISPLAY_NAME_MAPPINGS = {
-        "ModelScopeVisionNode": "ModelScope-Vision 图生文节点"
+        "ModelScopeVisionNode": "ModelScope Vision Analysis"
     }
 else:
     class OpenAINotInstalledNode:
@@ -229,12 +229,12 @@ else:
         CATEGORY = "ModelScopeAPI"
         
         def show_install_message(self, install_command):
-            return ("请先安装openai库才能使用图生文功能: " + install_command,)
+            return ("Please install openai library first to use Image-to-Text functionality: " + install_command,)
     
     NODE_CLASS_MAPPINGS = {
         "ModelScopeVisionNode": OpenAINotInstalledNode
     }
  
     NODE_DISPLAY_NAME_MAPPINGS = {
-        "ModelScopeVisionNode": "ModelScope-Vision 图生文节点 (需要安装openai)"
+        "ModelScopeVisionNode": "ModelScope Vision Analysis (openai installation required)"
     }

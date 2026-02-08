@@ -164,7 +164,7 @@ class ModelScopeVisionNode:
             print(f"🖼️ Image converted to base64 format")
             
             client = OpenAI(
-                base_url='https://api-inference.modelscope.cn/v1',
+                base_url='https://api-inference.modelscope.ai/v1',
                 api_key=api_token
             )
             

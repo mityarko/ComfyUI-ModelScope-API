@@ -405,7 +405,7 @@ class ModelScopeImageNode:
             try:
                 print(f"🔄 Attempting to use token {i+1}/{len(tokens)}...")
                 
-                url = 'https://api-inference.modelscope.cn/v1/images/generations'
+                url = 'https://api-inference.modelscope.ai/v1/images/generations'
                 payload = {
                     'model': model,
                     'prompt': prompt,
@@ -485,7 +485,7 @@ class ModelScopeImageNode:
                     max_wait_seconds = max(60, config.get('timeout', 720))
                     while True:
                         task_resp = requests.get(
-                            f"https://api-inference.modelscope.cn/v1/tasks/{task_id}",
+                            f"https://api-inference.modelscope.ai/v1/tasks/{task_id}",
                             headers={
                                 'Authorization': f'Bearer {token}',
                                 'X-ModelScope-Task-Type': 'image_generation'
@@ -768,7 +768,7 @@ class ModelScopeImageEditNode:
                 }
                 
                 print(f"🚀 Sending API request to {model}...")
-                url = 'https://api-inference.modelscope.cn/v1/images/generations'
+                url = 'https://api-inference.modelscope.ai/v1/images/generations'
                 submission_response = requests.post(
                     url,
                     data=json.dumps(payload, ensure_ascii=False).encode('utf-8'),
@@ -790,7 +790,7 @@ class ModelScopeImageEditNode:
                     
                     while True:
                         task_resp = requests.get(
-                            f"https://api-inference.modelscope.cn/v1/tasks/{task_id}",
+                            f"https://api-inference.modelscope.ai/v1/tasks/{task_id}",
                             headers={
                                 'Authorization': f'Bearer {token}',
                                 'X-ModelScope-Task-Type': 'image_generation'

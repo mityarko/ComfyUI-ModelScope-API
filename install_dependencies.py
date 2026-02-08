@@ -6,16 +6,16 @@ import sys
 import os
 
 def install_package(package):
-    """安装Python包"""
+    """Install a Python package"""
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
         return True
     except subprocess.CalledProcessError as e:
-        print(f"安装 {package} 失败: {e}")
+        print(f"Failed to install {package}: {e}")
         return False
 
 def check_package(package_name):
-    """检查包是否已安装"""
+    """Check if a package is installed"""
     try:
         __import__(package_name)
         return True
@@ -24,10 +24,10 @@ def check_package(package_name):
 
 def main():
     print("=" * 60)
-    print("Qwen-Image ComfyUI 插件依赖安装工具")
+    print("ModelScope API ComfyUI Plugin Dependency Installation Tool")
     print("=" * 60)
     
-    # 检查核心依赖
+    # Check core dependencies
     core_deps = {
         'requests': 'requests',
         'PIL': 'pillow',
@@ -35,17 +35,17 @@ def main():
         'numpy': 'numpy'
     }
     
-    print("\n🔍 检查核心依赖...")
+    print("\n🔍 Checking core dependencies...")
     missing_core = []
     for import_name, package_name in core_deps.items():
         if check_package(import_name):
-            print(f"✅ {package_name} 已安装")
+            print(f"✅ {package_name} is installed")
         else:
-            print(f"❌ {package_name} 未安装")
+            print(f"❌ {package_name} is not installed")
             missing_core.append(package_name)
     
-    # 检查图生文功能依赖
-    print("\n🔍 检查图生文功能依赖...")
+    # Check vision functionality dependencies
+    print("\n🔍 Checking vision functionality dependencies...")
     vision_deps = {
         'openai': 'openai',
         'httpx': 'httpx[socks]',
@@ -55,48 +55,48 @@ def main():
     missing_vision = []
     for import_name, package_name in vision_deps.items():
         if check_package(import_name):
-            print(f"✅ {package_name} 已安装")
+            print(f"✅ {package_name} is installed")
         else:
-            print(f"❌ {package_name} 未安装")
+            print(f"❌ {package_name} is not installed")
             missing_vision.append(package_name)
     
-    # 安装缺失的依赖
+    # Install missing dependencies
     all_missing = missing_core + missing_vision
     
     if not all_missing:
-        print("\n🎉 所有依赖都已安装！")
+        print("\n🎉 All dependencies are already installed!")
         return
     
-    print(f"\n📦 需要安装 {len(all_missing)} 个依赖包:")
+    print(f"\n📦 {len(all_missing)} dependency packages need to be installed:")
     for pkg in all_missing:
         print(f"  - {pkg}")
     
-    response = input("\n是否现在安装这些依赖？(y/n): ").lower().strip()
+    response = input("\nInstall these dependencies now? (y/n): ").lower().strip()
     
-    if response in ['y', 'yes', '是']:
-        print("\n🚀 开始安装依赖...")
+    if response in ['y', 'yes']:
+        print("\n🚀 Starting dependency installation...")
         success_count = 0
         
         for package in all_missing:
-            print(f"\n📦 安装 {package}...")
+            print(f"\n📦 Installing {package}...")
             if install_package(package):
-                print(f"✅ {package} 安装成功")
+                print(f"✅ {package} installed successfully")
                 success_count += 1
             else:
-                print(f"❌ {package} 安装失败")
+                print(f"❌ {package} installation failed")
         
-        print(f"\n📊 安装结果: {success_count}/{len(all_missing)} 个包安装成功")
+        print(f"\n📊 Installation results: {success_count}/{len(all_missing)} packages installed successfully")
         
         if success_count == len(all_missing):
-            print("🎉 所有依赖安装完成！请重启ComfyUI。")
+            print("🎉 All dependencies installed! Please restart ComfyUI.")
         else:
-            print("⚠️ 部分依赖安装失败，请手动安装或检查网络连接。")
-            print("\n手动安装命令:")
+            print("⚠️ Some dependencies failed to install. Please install manually or check your network connection.")
+            print("\nManual installation commands:")
             for package in all_missing:
                 print(f"  pip install {package}")
     else:
-        print("\n取消安装。")
-        print("\n手动安装命令:")
+        print("\nInstallation cancelled.")
+        print("\nManual installation commands:")
         for package in all_missing:
             print(f"  pip install {package}")
 

@@ -2,14 +2,14 @@ import requests
 import json
 import time
 import os
-import numpy as np  # 新增：用于处理随机种子
+import numpy as np
 
 try:
     from openai import OpenAI
     OPENAI_AVAILABLE = True
 except ImportError:
-    print("⚠️ 警告: 未安装openai库，文本生成功能将不可用")
-    print("请运行: pip install openai")
+    print("⚠️ Warning: openai library not installed, text generation functionality will be unavailable")
+    print("Please run: pip install openai")
     OPENAI_AVAILABLE = False
     OpenAI = None
 
@@ -26,7 +26,7 @@ def load_config():
             "default_prompt": "A beautiful landscape",
             "default_text_model": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
             "default_system_prompt": "You are a helpful assistant.",
-            "default_user_prompt": "你好",
+            "default_user_prompt": "Hello",
             "api_token": ""
         }
 
@@ -37,7 +37,7 @@ def save_config(config):
             json.dump(config, f, ensure_ascii=False, indent=2)
         return True
     except Exception as e:
-        print(f"保存配置失败: {e}")
+        print(f"Failed to save configuration: {e}")
         return False
 
 def load_api_token():
@@ -45,7 +45,7 @@ def load_api_token():
         cfg = load_config()
         return cfg.get("api_token", "").strip()
     except Exception as e:
-        print(f"读取 config.json中的token失败: {e}")
+        print(f"Failed to read token from config.json: {e}")
         return ""
 
 def save_api_token(token):
@@ -54,7 +54,7 @@ def save_api_token(token):
         cfg["api_token"] = token
         return save_config(cfg)
     except Exception as e:
-        print(f"保存token失败: {e}")
+        print(f"Failed to save token: {e}")
         return False
 
 class ModelScopeTextNode:
@@ -67,7 +67,7 @@ class ModelScopeTextNode:
             return {
                 "required": {
                     "error_message": ("STRING", {
-                        "default": "请先安装openai库: pip install openai",
+                        "default": "Please install openai library first: pip install openai",
                         "multiline": True
                     }),
                 }
@@ -78,11 +78,11 @@ class ModelScopeTextNode:
             "required": {
                 "user_prompt": ("STRING", {
                     "multiline": True,
-                    "default": config.get("default_user_prompt", "你好")
+                    "default": config.get("default_user_prompt", "Hello")
                 }),
                 "api_token": ("STRING", {
                     "default": saved_token,
-                    "placeholder": "请输入您的魔搭API Token",
+                    "placeholder": "Please enter your ModelScope API Token",
                     "multiline": False
                 }),
             },
@@ -108,7 +108,6 @@ class ModelScopeTextNode:
                 "stream": ("BOOLEAN", {
                     "default": True
                 }),
-                # 新增：seed参数配置
                 "seed": ("INT", {
                     "default": -1,
                     "min": -1,
@@ -122,39 +121,37 @@ class ModelScopeTextNode:
     FUNCTION = "generate_text"
     CATEGORY = "ModelScopeAPI"
 
-    # 新增：函数参数中添加seed
     def generate_text(self, user_prompt="", api_token="", system_prompt="You are a helpful assistant.", model="Qwen/Qwen3-Coder-480B-A35B-Instruct", max_tokens=2000, temperature=0.7, stream=True, seed=-1, error_message=""):
         if not OPENAI_AVAILABLE:
-            return ("请先安装openai库: pip install openai",)
+            return ("Please install openai library first: pip install openai",)
         
-        # 新增：处理seed（-1则生成随机种子）
         if seed == -1:
             seed = np.random.randint(0, 2147483647)
-        np.random.seed(seed % (2**32 - 1))  # 设置随机种子，确保结果可复现
+        np.random.seed(seed % (2**32 - 1))
         
         config = load_config()
         
         if not api_token or api_token.strip() == "":
             api_token = load_api_token()
             if not api_token or api_token.strip() == "":
-                raise Exception("请输入有效的API Token或确保已保存token")
+                raise Exception("Please enter a valid API Token or ensure token is saved")
         
         saved_token = load_api_token()
         if api_token != saved_token:
             if save_api_token(api_token):
-                print("✅ API Token已自动保存到modelscope_config.json")
+                print("✅ API Token has been automatically saved to modelscope_config.json")
             else:
-                print("⚠️ API Token保存失败，但不影响当前使用")
+                print("⚠️ API Token saving failed, but it doesn't affect current usage")
         
         try:
-            print(f"💬 开始文本生成...")
-            print(f"🤖 模型: {model}")
-            print(f"📝 用户提示: {user_prompt[:50]}...")
-            print(f"⚙️ 系统提示: {system_prompt[:50]}...")
-            print(f"🌡️ 温度: {temperature}")
-            print(f"📊 最大tokens: {max_tokens}")
-            print(f"⚡ 流式输出: {stream}")
-            print(f"🔢 种子: {seed}")  # 新增：打印种子信息
+            print(f"💬 Starting text generation...")
+            print(f"🤖 Model: {model}")
+            print(f"📝 User Prompt: {user_prompt[:50]}...")
+            print(f"⚙️ System Prompt: {system_prompt[:50]}...")
+            print(f"🌡️ Temperature: {temperature}")
+            print(f"📊 Max Tokens: {max_tokens}")
+            print(f"⚡ Streaming: {stream}")
+            print(f"🔢 Seed: {seed}")
             
             client = OpenAI(
                 base_url='https://api-inference.modelscope.cn/v1',
@@ -172,7 +169,7 @@ class ModelScopeTextNode:
                 }
             ]
             
-            print(f"🚀 发送API请求...")
+            print(f"🚀 Sending API request...")
             
             response = client.chat.completions.create(
                 model=model,
@@ -183,7 +180,7 @@ class ModelScopeTextNode:
             )
             
             if stream:
-                print("📡 接收流式响应...")
+                print("📡 Receiving streaming response...")
                 full_response = ""
                 for chunk in response:
                     if chunk.choices[0].delta.content:
@@ -191,18 +188,18 @@ class ModelScopeTextNode:
                         full_response += content
                         print(content, end='', flush=True)
                 
-                print(f"\n✅ 流式生成完成!")
-                print(f"📄 总长度: {len(full_response)} 字符")
+                print(f"\n✅ Streaming generation complete!")
+                print(f"📄 Total length: {len(full_response)} characters")
                 return (full_response,)
             else:
                 result = response.choices[0].message.content
-                print(f"✅ 文本生成完成!")
-                print(f"📄 结果长度: {len(result)} 字符")
-                print(f"📝 结果预览: {result[:100]}...")
+                print(f"✅ Text generation complete!")
+                print(f"📄 Result length: {len(result)} characters")
+                print(f"📝 Result preview: {result[:100]}...")
                 return (result,)
             
         except Exception as e:
-            error_msg = f"文本生成失败: {str(e)}"
+            error_msg = f"Text generation failed: {str(e)}"
             print(f"❌ {error_msg}")
             return (error_msg,)
 
@@ -212,7 +209,7 @@ if OPENAI_AVAILABLE:
     }
      
     NODE_DISPLAY_NAME_MAPPINGS = {
-        "ModelScopeTextNode": "ModelScope-Text 文本生成节点"
+        "ModelScopeTextNode": "ModelScope Text Generation"
     }
 else:
     class OpenAINotInstalledNode:
@@ -233,12 +230,12 @@ else:
         CATEGORY = "ModelScopeAPI"
         
         def show_install_message(self, install_command):
-            return ("请先安装openai库才能使用文本生成功能: " + install_command,)
+            return ("Please install openai library first to use text generation functionality: " + install_command,)
     
     NODE_CLASS_MAPPINGS = {
         "ModelScopeTextNode": OpenAINotInstalledNode
     }
  
     NODE_DISPLAY_NAME_MAPPINGS = {
-        "ModelScopeTextNode": "ModelScope-Text 文本生成节点 (需要安装openai)"
+        "ModelScopeTextNode": "ModelScope Text Generation (openai installation required)"
     }

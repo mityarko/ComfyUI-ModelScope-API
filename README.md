@@ -133,13 +133,13 @@ Create multiple ModelScope API nodes with different seeds to generate variants o
 For image-to-image generation, prompts should describe the changes you want to make, rather than the entire image. For example, if you input a photo of a cat, a prompt like "make it look like a watercolor painting" will be more effective than "watercolor style cat".
 
 ### 🔑 How to Obtain a ModelScope Access Token
-1. **Login or Register**: Visit https://www.modelscope.cn/. If you already have an account, click the "Login" button in the upper right corner. If not, click "Register" to create an account.
+1. **Login or Register**: Visit https://www.modelscope.ai/. If you already have an account, click the "Login" button in the upper right corner. If not, click "Register" to create an account.
 2. **Go to Personal Homepage**: After logging in, hover over your avatar in the upper right corner.
 3. **Access Tokens Page**: In the dropdown menu, click "Access Tokens".
 4. **View or Generate Token**: On the "Access Tokens" page, you can see your personal Access Token. If you haven't generated one before, the system may prompt you to generate a new token.
 
 ### 🙏 Acknowledgments
-- API Service Provider: [ModelScope](https://www.modelscope.cn/)
+- API Service Provider: [ModelScope](https://www.modelscope.ai/)
 - Model Provider: MusePublic
 - Image Upload Service: freeimage.host
 

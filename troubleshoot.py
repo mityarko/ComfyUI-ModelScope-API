@@ -125,7 +125,7 @@ def check_network():
     # Check API server connection
     try:
         import requests
-        response = requests.get('https://api-inference.modelscope.cn', timeout=10)
+        response = requests.get('https://api-inference.modelscope.ai', timeout=10)
         print(f"✅ API server connection normal (Status code: {response.status_code})")
     except Exception as e:
         print(f"❌ API server connection failed: {e}")
